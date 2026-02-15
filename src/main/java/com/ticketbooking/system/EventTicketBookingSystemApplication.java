@@ -6,9 +6,9 @@ import org.springframework.scheduling.annotation.EnableScheduling;
 
 @SpringBootApplication
 @EnableScheduling
-public class TicketBookingSystemApplication {
+public class EventTicketBookingSystemApplication {
 
     public static void main(String[] args) {
-        SpringApplication.run(TicketBookingSystemApplication.class, args);
+        SpringApplication.run(EventTicketBookingSystemApplication.class, args);
     }
 }
