@@ -145,31 +145,6 @@ Optional tracing headers (if not provided, server generates values):
 - Confirming a hold creates a permanent booking and marks hold as `CONFIRMED`.
 - Cancellation is soft delete by status transition to `CANCELED`.
 
-
-## Senior-level Design Considerations (Non-functional)
-
-- **Duplicate event prevention**:
-  - Event creation is now idempotent by business key (`name + eventDate + location`).
-  - Posting the same event payload again returns the existing event instead of creating a duplicate row.
-  - A database-level unique constraint also protects against accidental duplicates under concurrent requests.
-
-- **Booking behavior per user**:
-  - Same user can create multiple confirmed bookings for the same event as long as requested seats are available and not already held/booked.
-
-- **Concurrent seat holds / overbooking prevention**:
-  - Hold and confirm flows lock the event row with **pessimistic write lock**, serializing seat-allocation critical sections per event.
-  - Seat availability checks include both currently confirmed seats and still-active holds.
-  - This prevents two users from successfully holding the same seat at the same time.
-
-- **Idempotency and retry safety**:
-  - Event create endpoint supports safe retries for duplicate payloads.
-  - Booking confirmation validates hold state and seat ownership before creating final booking records.
-
-- **Data integrity**:
-  - Soft cancel is preserved for booking audit trail.
-  - Expired holds are cleaned by scheduler so stale reservations are released.
-
-
 ## Error Response Semantics
 
 - `400 Bad Request`: malformed JSON / invalid payload format.
